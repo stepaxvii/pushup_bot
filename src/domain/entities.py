@@ -16,6 +16,8 @@ class User:
     days: int
     total_count: int
     last_activity_date: Optional[date]
+    consecutive_days: int
+    daily_goal: int
 
 
 @dataclass

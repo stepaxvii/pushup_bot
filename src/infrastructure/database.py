@@ -89,7 +89,8 @@ class DatabaseAdapter:
                 
                 user_data = (existing_user[0], chat_id, first_name, 
                            existing_user[3], existing_user[4], 
-                           existing_user[5], existing_user[6] if existing_user[6] else None)
+                           existing_user[5], existing_user[6] if existing_user[6] else None,
+                           existing_user[7], existing_user[8])
             else:
                 # Создаём нового пользователя
                 cursor.execute("""
@@ -98,7 +99,7 @@ class DatabaseAdapter:
                 """, (chat_id, first_name))
                 
                 user_id = cursor.lastrowid
-                user_data = (user_id, chat_id, first_name, 1, 0, 0, date.today())
+                user_data = (user_id, chat_id, first_name, 1, 0, 0, date.today(), 0, 30)
             
             conn.commit()
             conn.close()

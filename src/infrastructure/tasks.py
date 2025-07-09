@@ -4,12 +4,8 @@ import logging
 from dotenv import load_dotenv
 from aiogram import Bot
 from src.infrastructure.celery_app import celery_app
-from notifications import (
-    send_morning_reminder as send_morning_notification, 
-    send_afternoon_reminder as send_afternoon_notification, 
-    send_evening_reminder as send_evening_notification, 
-    send_weekly_progress_report as send_weekly_notification
-)
+# Импортируем функции уведомлений
+import notifications
 
 load_dotenv()
 
@@ -25,7 +21,7 @@ def send_morning_reminder(user_id: int):
         bot = Bot(token=TOKEN_BOT or "")
         
         # Запускаем асинхронную функцию в синхронном контексте
-        asyncio.run(send_morning_notification(bot, user_id, "Пользователь"))
+        asyncio.run(notifications.send_morning_reminder(bot, user_id, "Пользователь"))
         
         logging.info(f"Отправлено утреннее напоминание пользователю {user_id}")
     except Exception as e:
@@ -39,7 +35,7 @@ def send_afternoon_reminder(user_id: int):
         bot = Bot(token=TOKEN_BOT or "")
         
         # Запускаем асинхронную функцию в синхронном контексте
-        asyncio.run(send_afternoon_notification(bot, user_id, "Пользователь"))
+        asyncio.run(notifications.send_afternoon_reminder(bot, user_id, "Пользователь"))
         
         logging.info(f"Отправлено дневное напоминание пользователю {user_id}")
     except Exception as e:
@@ -53,7 +49,7 @@ def send_evening_reminder(user_id: int):
         bot = Bot(token=TOKEN_BOT or "")
         
         # Запускаем асинхронную функцию в синхронном контексте
-        asyncio.run(send_evening_notification(bot, user_id, "Пользователь"))
+        asyncio.run(notifications.send_evening_reminder(bot, user_id, "Пользователь"))
         
         logging.info(f"Отправлено вечернее напоминание пользователю {user_id}")
     except Exception as e:
@@ -67,7 +63,7 @@ def send_weekly_progress_report(user_id: int):
         bot = Bot(token=TOKEN_BOT or "")
         
         # Запускаем асинхронную функцию в синхронном контексте
-        asyncio.run(send_weekly_notification(bot, user_id, "Пользователь"))
+        asyncio.run(notifications.send_weekly_progress_report(bot, user_id, "Пользователь"))
         
         logging.info(f"Отправлен еженедельный отчет пользователю {user_id}")
     except Exception as e:
