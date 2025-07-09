@@ -1,0 +1,29 @@
+# Переменные окружения
+.env
+
+# Виртуальное окружение
+venv/
+env/
+.venv/
+
+# База данных
+*.db
+
+# Логи
+*.log
+
+# Кэш Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Временные файлы
+*.tmp
+*.temp

@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  bot:
+    build: .
+    environment:
+      - TOKEN_BOT=${TOKEN_BOT}
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - redis
+    volumes:
+      - ./users.db:/app/users.db
+      - ./bot_pushups.log:/app/bot_pushups.log
+    restart: unless-stopped
+
+  scheduler:
+    build: .
+    command: python scheduler.py
+    environment:
+      - TOKEN_BOT=${TOKEN_BOT}
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - redis
+      - bot
+    volumes:
+      - ./users.db:/app/users.db
+      - ./scheduler.log:/app/scheduler.log
+    restart: unless-stopped
+
+volumes:
+  redis_data: 

@@ -1,0 +1,4 @@
+aiogram
+celery
+redis
+python-dotenv

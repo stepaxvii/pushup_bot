@@ -1,0 +1,5 @@
+# Пример переменных окружения для бота
+TOKEN_BOT=your_telegram_token_here
+REDIS_URL=redis://localhost:6379/0
+CELERY_BROKER_URL=redis://localhost:6379/0
+CELERY_RESULT_BACKEND=redis://localhost:6379/0 
