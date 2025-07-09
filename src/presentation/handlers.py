@@ -46,58 +46,74 @@ class MessageHandlers:
     
     async def new_task_handler(self, message: types.Message) -> None:
         """Обработка кнопки нового задания."""
-        chat_id = message.chat.id
-        first_name = message.chat.first_name or "Пользователь"
-        
-        # Создаём задание (для тестирования - разрешаем несколько заданий в день)
-        task = self.task_use_case.create_task(chat_id)
-        
-        if task:
-            await message.answer(
-                text=get_task_message(first_name, task),
-                reply_markup=create_task_keyboard(task.pushups_count)
-            )
-        else:
+        try:
+            chat_id = message.chat.id
+            first_name = message.chat.first_name or "Пользователь"
+            
+            # Создаём задание (для тестирования - разрешаем несколько заданий в день)
+            task = self.task_use_case.create_task(chat_id)
+            
+            if task:
+                await message.answer(
+                    text=get_task_message(first_name, task),
+                    reply_markup=create_task_keyboard(task.pushups_count)
+                )
+            else:
+                await message.answer(get_error_message())
+        except Exception as e:
+            logging.error(f"Ошибка в new_task_handler: {e}")
             await message.answer(get_error_message())
     
     async def stats_handler(self, message: types.Message) -> None:
         """Обработка кнопки статистики."""
-        chat_id = message.chat.id
-        first_name = message.chat.first_name or "Пользователь"
-        
-        stats = self.stats_use_case.get_user_stats(chat_id)
-        
-        if stats:
-            await message.answer(
-                text=get_stats_message(stats),
-                reply_markup=create_stats_keyboard()
-            )
-        else:
-            await message.answer(
-                get_no_stats_message(first_name),
-                reply_markup=create_main_keyboard()
-            )
+        try:
+            chat_id = message.chat.id
+            first_name = message.chat.first_name or "Пользователь"
+            
+            stats = self.stats_use_case.get_user_stats(chat_id)
+            
+            if stats:
+                await message.answer(
+                    text=get_stats_message(stats),
+                    reply_markup=create_stats_keyboard()
+                )
+            else:
+                await message.answer(
+                    get_no_stats_message(first_name),
+                    reply_markup=create_main_keyboard()
+                )
+        except Exception as e:
+            logging.error(f"Ошибка в stats_handler: {e}")
+            await message.answer(get_error_message())
     
     async def help_handler(self, message: types.Message) -> None:
         """Обработка кнопки помощи."""
-        await message.answer(
-            text=get_help_message(),
-            reply_markup=create_main_keyboard()
-        )
+        try:
+            await message.answer(
+                text=get_help_message(),
+                reply_markup=create_main_keyboard()
+            )
+        except Exception as e:
+            logging.error(f"Ошибка в help_handler: {e}")
+            await message.answer(get_error_message())
     
     async def settings_handler(self, message: types.Message) -> None:
         """Обработка кнопки настроек."""
-        chat_id = message.chat.id
-        first_name = message.chat.first_name or "Пользователь"
-        
-        user = self.user_use_case.get_user(chat_id)
-        
-        if user:
-            await message.answer(
-                text=get_settings_message(first_name, user.level),
-                reply_markup=create_settings_keyboard(user.level)
-            )
-        else:
+        try:
+            chat_id = message.chat.id
+            first_name = message.chat.first_name or "Пользователь"
+            
+            user = self.user_use_case.get_user(chat_id)
+            
+            if user:
+                await message.answer(
+                    text=get_settings_message(first_name, user.level),
+                    reply_markup=create_settings_keyboard(user.level)
+                )
+            else:
+                await message.answer(get_error_message())
+        except Exception as e:
+            logging.error(f"Ошибка в settings_handler: {e}")
             await message.answer(get_error_message())
     
     async def done_callback_handler(self, callback: CallbackQuery) -> None:

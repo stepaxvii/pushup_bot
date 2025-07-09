@@ -1,6 +1,7 @@
 """
 Сценарии использования приложения - бизнес-операции.
 """
+import logging
 from typing import Optional
 from datetime import date
 
@@ -38,34 +39,54 @@ class TaskUseCase:
     
     def create_task(self, chat_id: int) -> Optional[Task]:
         """Создание нового задания для пользователя."""
-        user = self.db.get_user(chat_id)
-        if not user:
+        try:
+            user = self.db.get_user(chat_id)
+            if not user:
+                logging.error(f"Пользователь не найден для chat_id: {chat_id}")
+                return None
+            
+            # Генерируем новое задание без проверки на уже выполненное
+            # (для тестирования - разрешаем несколько заданий в день)
+            task = TaskService.generate_task(user)
+            logging.info(f"Создано задание для пользователя {chat_id}: {task.pushups_count} отжиманий")
+            
+            # Не сохраняем задание в базу данных пока - только при выполнении
+            # self.db.save_daily_activity(user.id, task.pushups_count)
+            
+            return task
+        except Exception as e:
+            logging.error(f"Ошибка при создании задания для chat_id {chat_id}: {e}")
             return None
-        
-        # Генерируем новое задание без проверки на уже выполненное
-        # (для тестирования - разрешаем несколько заданий в день)
-        task = TaskService.generate_task(user)
-        
-        # Не сохраняем задание в базу данных пока - только при выполнении
-        # self.db.save_daily_activity(user.id, task.pushups_count)
-        
-        return task
     
     def complete_task(self, chat_id: int, pushups_count: int) -> bool:
         """Выполнение задания с пользовательским количеством отжиманий."""
-        user = self.db.get_user(chat_id)
-        if not user:
+        try:
+            user = self.db.get_user(chat_id)
+            if not user:
+                logging.error(f"Пользователь не найден для chat_id: {chat_id}")
+                return False
+            
+            result = self.db.save_daily_activity(user.id, pushups_count)
+            logging.info(f"Задание выполнено для пользователя {chat_id}: {pushups_count} отжиманий")
+            return result
+        except Exception as e:
+            logging.error(f"Ошибка при выполнении задания для chat_id {chat_id}: {e}")
             return False
-        
-        return self.db.save_daily_activity(user.id, pushups_count)
     
     def skip_task(self, chat_id: int) -> bool:
         """Пропуск сегодняшнего задания."""
-        user = self.db.get_user(chat_id)
-        if not user:
+        try:
+            user = self.db.get_user(chat_id)
+            if not user:
+                logging.error(f"Пользователь не найден для chat_id: {chat_id}")
+                return False
+            
+            result = self.db.save_daily_activity(user.id, 0)
+            logging.info(f"Задание пропущено для пользователя {chat_id}")
+            return result
+        except Exception as e:
+            logging.error(f"Ошибка при пропуске задания для chat_id {chat_id}: {e}")
             return False
-        
-        return self.db.save_daily_activity(user.id, 0)
 
 
 class StatsUseCase:
@@ -76,11 +97,26 @@ class StatsUseCase:
     
     def get_user_stats(self, chat_id: int) -> Optional[UserStats]:
         """Получение статистики пользователя."""
-        return self.db.get_user_stats(chat_id)
+        try:
+            stats = self.db.get_user_stats(chat_id)
+            if stats:
+                logging.info(f"Получена статистика для пользователя {chat_id}")
+            else:
+                logging.warning(f"Статистика не найдена для пользователя {chat_id}")
+            return stats
+        except Exception as e:
+            logging.error(f"Ошибка при получении статистики для chat_id {chat_id}: {e}")
+            return None
     
     def check_today_activity(self, chat_id: int) -> bool:
         """Проверка, выполнил ли пользователь активность сегодня."""
-        return self.db.check_today_activity(chat_id)
+        try:
+            result = self.db.check_today_activity(chat_id)
+            logging.info(f"Проверка активности для пользователя {chat_id}: {result}")
+            return result
+        except Exception as e:
+            logging.error(f"Ошибка при проверке активности для chat_id {chat_id}: {e}")
+            return False
 
 
 class AchievementUseCase:
