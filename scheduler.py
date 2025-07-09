@@ -8,8 +8,13 @@ from src.infrastructure.database import DatabaseAdapter
 
 load_dotenv()
 
+# Создаём директорию для логов, если её нет
+log_dir = os.getenv('LOG_DIR', '.')
+if not os.path.exists(log_dir):
+    os.makedirs(log_dir, exist_ok=True)
+
 logging.basicConfig(
-    filename='scheduler.log',
+    filename=os.path.join(log_dir, 'scheduler.log'),
     filemode='a',
     encoding='utf-8',
     format='%(asctime)s - %(levelname)s - %(message)s',

@@ -16,11 +16,13 @@ services:
       - REDIS_URL=redis://redis:6379/0
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - DB_PATH=/app/data/users.db
+      - LOG_DIR=/app/logs
     depends_on:
       - redis
     volumes:
-      - ./users.db:/app/users.db
-      - ./bot_pushups.log:/app/bot_pushups.log
+      - bot_data:/app/data
+      - bot_logs:/app/logs
     restart: unless-stopped
 
   scheduler:
@@ -31,13 +33,17 @@ services:
       - REDIS_URL=redis://redis:6379/0
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - DB_PATH=/app/data/users.db
+      - LOG_DIR=/app/logs
     depends_on:
       - redis
       - bot
     volumes:
-      - ./users.db:/app/users.db
-      - ./scheduler.log:/app/scheduler.log
+      - bot_data:/app/data
+      - bot_logs:/app/logs
     restart: unless-stopped
 
 volumes:
-  redis_data: 
+  redis_data:
+  bot_data:
+  bot_logs: 

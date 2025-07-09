@@ -22,9 +22,14 @@ TOKEN_BOT = os.getenv('TOKEN_BOT')
 if not TOKEN_BOT:
     raise ValueError("TOKEN_BOT не найден в переменных окружения!")
 
+# Создаём директорию для логов, если её нет
+log_dir = os.getenv('LOG_DIR', '.')
+if not os.path.exists(log_dir):
+    os.makedirs(log_dir, exist_ok=True)
+
 # Настройка логирования
 logging.basicConfig(
-    filename='bot_pushups.log',
+    filename=os.path.join(log_dir, 'bot_pushups.log'),
     filemode='a',
     encoding='utf-8',
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',

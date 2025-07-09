@@ -3,6 +3,7 @@
 """
 import sqlite3
 import logging
+import os
 from datetime import datetime, date
 from typing import Optional, List, Tuple
 
@@ -12,8 +13,17 @@ from src.domain.entities import User, DailyActivity, UserStats
 class DatabaseAdapter:
     """Адаптер базы данных для SQLite."""
     
-    def __init__(self, db_path: str = "users.db"):
-        self.db_path = db_path
+    def __init__(self, db_path: Optional[str] = None):
+        if db_path is None:
+            self.db_path = os.getenv('DB_PATH', 'users.db')
+        else:
+            self.db_path = db_path
+        
+        # Создаём директорию для базы данных, если её нет
+        db_dir = os.path.dirname(self.db_path)
+        if db_dir and not os.path.exists(db_dir):
+            os.makedirs(db_dir, exist_ok=True)
+            
         self._init_database()
     
     def _init_database(self):
