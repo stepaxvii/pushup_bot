@@ -19,7 +19,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Создаем пользователя для безопасности
-RUN useradd -m -u 1000 botuser && chown -R botuser:botuser /app
+RUN useradd -m -u 1000 botuser
+
+# Создаем директории для логов и данных
+RUN mkdir -p /app/logs /app/data && \
+    chown -R botuser:botuser /app
+
 USER botuser
 
 # Открываем порт для Redis (если нужно)
